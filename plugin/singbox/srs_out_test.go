@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Loyalsoldier/geoip/lib"
+	"github.com/Z0714Y/GeoIP/lib"
 	"github.com/sagernet/sing-box/common/srs"
 )
 

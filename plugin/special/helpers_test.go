@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Loyalsoldier/geoip/lib"
+	"github.com/Z0714Y/GeoIP/lib"
 )
 
 var errMock = errors.New("mock error")

@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/Loyalsoldier/geoip/lib"
-	"github.com/Loyalsoldier/geoip/plugin/special"
+	"github.com/Z0714Y/GeoIP/lib"
+	"github.com/Z0714Y/GeoIP/plugin/special"
 	"github.com/spf13/cobra"
 )
 

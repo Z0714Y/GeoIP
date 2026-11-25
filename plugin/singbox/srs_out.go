@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Loyalsoldier/geoip/lib"
+	"github.com/Z0714Y/GeoIP/lib"
 	"github.com/sagernet/sing-box/common/srs"
 	"github.com/sagernet/sing-box/constant"
 	"github.com/sagernet/sing-box/option"
