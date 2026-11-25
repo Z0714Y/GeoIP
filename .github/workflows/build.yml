@@ -3,8 +3,8 @@ name: build.yml
 on:
   workflow_dispatch:
   schedule:
-    # 每周一北京时间 05:30（UTC 周日 21:30）
-    - cron: "30 21 * * 0"
+    # 每周一北京时间 05:00（UTC 周日 21:00）
+    - cron: "0 21 * * 0"
   push:
     branches:
       - master
