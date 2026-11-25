@@ -5,25 +5,13 @@ on:
   schedule:
     # 每周一北京时间 05:00（UTC 周日 21:00）
     - cron: "0 21 * * 0"
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - "assets/*"
-      - ".gitignore"
-      - "LICENSE*"
-      - "*.md"
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - "assets/*"
-      - ".gitignore"
-      - "LICENSE*"
-      - "*.md"
 
 permissions:
   contents: write
+
+concurrency:
+  group: geoip-build
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -45,8 +33,9 @@ jobs:
       - name: Set variables
         shell: bash
         run: |
-          echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> "$GITHUB_ENV"
-          echo "RELEASE_NAME=$(date +%Y%m%d%H%M)" >> "$GITHUB_ENV"
+          BUILD_TIME=$(TZ=Asia/Shanghai date +%Y%m%d%H%M)
+          echo "TAG_NAME=${BUILD_TIME}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          echo "RELEASE_NAME=${BUILD_TIME}" >> "$GITHUB_ENV"
 
       - name: Download GeoLite2 databases
         env:
@@ -186,7 +175,6 @@ jobs:
           done
 
       - name: Keep required files
-        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -198,7 +186,6 @@ jobs:
             -delete
 
       - name: Git push assets to "release" branch
-        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -216,7 +203,6 @@ jobs:
           git push -f -u geoip release
 
       - name: Purge jsdelivr CDN
-        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -224,11 +210,16 @@ jobs:
 
           for file in *; do
             [[ -f "$file" ]] || continue
-            curl -i "https://purge.jsdelivr.net/gh/${{ github.repository }}@release/${file}"
+            curl -fsS \
+              --retry 3 \
+              --retry-delay 2 \
+              --connect-timeout 20 \
+              --max-time 120 \
+              "https://purge.jsdelivr.net/gh/${{ github.repository }}@release/${file}"
+            echo "Purged: $file"
           done
 
       - name: Remove some files to avoid publishing to GitHub release
-        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -239,7 +230,6 @@ jobs:
           rm -rf ./output/{clash,dat,mrs,nginx,srs,surge,text}
 
       - name: Upload files to GitHub release
-        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
