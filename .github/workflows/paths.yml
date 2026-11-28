@@ -6,6 +6,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: repository-main-writes
+  cancel-in-progress: false
+
 jobs:
   update-repository-paths:
     runs-on: ubuntu-latest
@@ -92,4 +96,5 @@ jobs:
             exit 0
           fi
           git commit -m "Update repository paths [ZY-AUTO] [skip ci]"
+          git pull --rebase origin master
           git push origin HEAD:master
