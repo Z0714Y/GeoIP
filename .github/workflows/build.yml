@@ -10,6 +10,7 @@ permissions:
 
 concurrency:
   group: repository-main-writes
+  queue: max
   cancel-in-progress: false
 
 jobs:
